@@ -31,12 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'wishlist.apps.WishlistConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangosite.wsgi.application'
 
+WEBPACK_LOADER = {
+    'WISHLIST': {
+        'BUNDLE_DIR_NAME': 'wishlist_bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-wishlist.dev.json'),
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
