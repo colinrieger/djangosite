@@ -25,6 +25,7 @@ wheels/
 *.egg
 MANIFEST
 webpack-stats-*
+assets/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -55,6 +56,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+local_prod_settings.py
 db.sqlite3
 
 # Flask stuff:
