@@ -47,7 +47,7 @@ class WishlistDetail extends Component {
       },
       body: {}
     })
-      .then(this.loadDetails(this.props.id));
+      .then(response => { this.loadDetails(this.props.id); });
   }
   
   componentWillReceiveProps(nextProps) {
