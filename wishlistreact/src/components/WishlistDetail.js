@@ -7,6 +7,7 @@ class WishlistDetail extends Component {
   };
 
   state = {
+    details: {},
     data: []
   };
 
@@ -28,7 +29,7 @@ class WishlistDetail extends Component {
   loadDetails(id) {
     fetch(id  + '/')
       .then(response => { return response.json(); })
-      .then(data => { this.setState({ data: data.results }); });
+      .then(data => { this.setState({ details: data.details, data: data.results }); });
   }
 
   handleDelete(id, e) {
@@ -57,6 +58,24 @@ class WishlistDetail extends Component {
   }
 
   render() {
+    const buttonStyle = {
+      height: "20px",
+      width: "50px",
+      display: "inline-block",
+      position: "absolute",
+      right: "0",
+      bottom: "0",
+      marginBottom: "10px"
+    };
+
+    const thStyle = {
+      borderBottom: "1px solid black"
+    };
+
+    const tdStyle = {
+      borderBottom: "1px solid #D3D3D3"
+    };
+
     const columns = [
       {
         'key': 'name',
@@ -66,31 +85,38 @@ class WishlistDetail extends Component {
         'key': 'url',
         'header': 'URL'
       },
-    ]
+    ];
 
-    const header = columns.map(column =>
-      <th key={column.key}>{column.header}</th>
+    const header = (
+      <thead>
+        <tr style={{ textAlign: "left" }}>
+          {columns.map(column => <th key={column.key} style={ thStyle }>{column.header}</th>)}
+          <th style={ thStyle }>Delete</th>
+        </tr>
+      </thead>
     );
 
     const rows = this.state.data.map(row =>
-      <tr key={row.id}>
-        {columns.map(column => <td key={column.key + row.id}>{row[column.key]}</td>)}
-        <td key={"delete" + row.id}><button onClick={(e) => this.handleDelete(row.id, e)}>X</button></td>
-      </tr>
+      <tbody>
+        <tr key={row.id}>
+          {columns.map(column => <td key={column.key + row.id} style={ tdStyle }>{row[column.key]}</td>)}
+          <td key={"delete" + row.id} style={ tdStyle }><button onClick={(e) => this.handleDelete(row.id, e)}>X</button></td>
+        </tr>
+      </tbody>
     );
 
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
+      <div style={{ height: "100%" }}>
+        <div style={{ position: "relative", height: "39px" }}>
+          <h4 style={{ display: "inline-block"}}>{this.state.details.name}</h4>
+          <button style={ buttonStyle }>Add</button>
+        </div>
+        <div id="wishlist">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
             {header}
-            </tr>
-          </thead>
-          <tbody>
             {rows}
-          </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     );
   }

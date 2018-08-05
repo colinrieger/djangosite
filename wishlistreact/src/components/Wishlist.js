@@ -5,7 +5,7 @@ import WishlistDetail from "./WishlistDetail";
 class Wishlist extends Component {
   constructor(props) {
     super(props);
-    this.loadList = this.loadList.bind(this);
+    this.handleListClick = this.handleListClick.bind(this);
   }
 
   state = {
@@ -23,19 +23,24 @@ class Wishlist extends Component {
         if (this.state.currentId < 0 && data.results.length > 0) {
           newState.currentId = data.results[0].id;
         }
-        this.setState(newState); 
+        this.setState(newState);
       });
   }
 
-  loadList(id) {
+  handleListClick(id) {
     this.setState({ currentId: id });
   }
 
   render() {
     return (
-      <div>
-        <WishlistList lists={this.state.data.results} handleClick={this.loadList} />
-        <WishlistDetail id={this.state.currentId} />
+      <div id="main-panel">
+        <div id="left-panel">
+          <WishlistList currentId={this.state.currentId} lists={this.state.data.results} onListClick={this.handleListClick} />
+        </div>
+        <div id="center-panel">
+          <WishlistDetail id={this.state.currentId} />
+        </div>
+        <div id="right-panel"></div>
       </div>
     );
   }

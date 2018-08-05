@@ -1,0 +1,47 @@
+#main-panel {
+    margin: 0 auto;
+    width: 80%;
+    height: 95vh;
+}
+
+#left-panel {
+    height: 100%;
+    width: 20%;
+    padding: 4px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#center-panel {
+    height: 100%;
+    width: 60%;
+    padding: 4px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#right-panel {
+    height: 100%;
+    width: 20%;
+    padding: 4px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#wishlists, #wishlist {
+    height: calc(100% - 39px); /* minus header height/margin */
+    border: 1px solid black;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#wishlists ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#wishlists li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}

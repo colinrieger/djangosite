@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from wishlist.models import Wishlist, WishlistItem
-from django.core import serializers
+from django.forms.models import model_to_dict
 
 def lists(request):
     return JsonResponse({"results": list(Wishlist.objects.all().values())})
@@ -13,7 +13,7 @@ def detail(request, wishlist_id):
     except Wishlist.DoesNotExist:
         pass
 
-    return JsonResponse({"results": results})
+    return JsonResponse({"details": model_to_dict(wishlist), "results": results})
 
 def update(request, wishlist_id):
     pass
