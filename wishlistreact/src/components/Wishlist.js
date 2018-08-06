@@ -1,6 +1,7 @@
-import React, { Component } from "react";
-import WishlistList from "./WishlistList";
-import WishlistDetail from "./WishlistDetail";
+import React, { Component } from 'react';
+import WishlistList from './WishlistList';
+import WishlistDetail from './WishlistDetail';
+import Dialog from './Dialog';
 
 class Wishlist extends Component {
   constructor(props) {
@@ -33,14 +34,14 @@ class Wishlist extends Component {
 
   render() {
     return (
-      <div id="main-panel">
-        <div id="left-panel">
+      <div id='main-panel'>
+        <div id='left-panel'>
           <WishlistList currentId={this.state.currentId} lists={this.state.data.results} onListClick={this.handleListClick} />
         </div>
-        <div id="center-panel">
+        <div id='center-panel'>
           <WishlistDetail id={this.state.currentId} />
         </div>
-        <div id="right-panel"></div>
+        <div id='right-panel'></div>
       </div>
     );
   }
