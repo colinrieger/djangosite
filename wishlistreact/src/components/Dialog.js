@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 
 class Dialog extends Component {
   static defaultProps = {
-    modal: true
+    width: 500,
+    height: 400
   }
 
   static propTypes = {
     title: PropTypes.string.isRequired,
     buttons: PropTypes.array.isRequired,
     visible: PropTypes.bool.isRequired,
-    modal: PropTypes.bool
+    width: PropTypes.number,
+    height: PropTypes.number
   };
 
   state = {
@@ -29,16 +31,18 @@ class Dialog extends Component {
       top: 0,
       bottom: 0,
       left: 0,
-      right: 0,
-      padding: 120
+      right: 0
     };
 
     const dialogStyle = {
+      position: 'absolute',
       backgroundColor: '#fff',
       borderRadius: 5,
-      width: 500,
-      height: 400,
-      margin: '0 auto'
+      width: this.props.width,
+      height: this.props.height,
+      top: '50%',
+      left: '50%',
+      margin: '-' + (this.props.height / 2) + 'px 0 0 -' + (this.props.width / 2) + 'px'
     };
 
     const titleStyle = {
@@ -71,13 +75,15 @@ class Dialog extends Component {
     );
 
     return (
-      <div style={ this.props.modal ? modalStyle : {} }>
-        <div style={dialogStyle}>
-          <div style={titleStyle}>{this.props.title}</div>
-          <div style={childrenStyle}>{this.props.children}</div>
-          <div style={buttonBarStyle}>{buttons}</div>
+        <div style={modalStyle}>
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div style={dialogStyle}>
+              <div style={titleStyle}>{this.props.title}</div>
+              <div style={childrenStyle}>{this.props.children}</div>
+              <div style={buttonBarStyle}>{buttons}</div>
+            </div>
+          </div>
         </div>
-      </div>
     );
   }
 }
