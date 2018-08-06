@@ -1,9 +1,17 @@
 from django.http import JsonResponse
 from wishlist.models import Wishlist, WishlistItem
 from django.forms.models import model_to_dict
+import json
 
 def lists(request):
     return JsonResponse({"results": list(Wishlist.objects.all().values())})
+
+def add(request):
+    json_request = json.loads(request.body.decode("utf-8"))
+    wishlist = Wishlist(name=json_request['name'])
+    wishlist.save()
+
+    return JsonResponse({})
 
 def detail(request, wishlist_id):
     results = []
@@ -24,10 +32,18 @@ def delete(request, wishlist_id):
         wishlist.delete()
     except Wishlist.DoesNotExist:
         pass
+
     return JsonResponse({})
 
 def add_item(request, wishlist_id):
-    pass
+    try:
+        json_request = json.loads(request.body.decode("utf-8"))
+        wishlist = Wishlist.objects.get(id=wishlist_id)
+        wishlist.wishlistitem_set.create(name=json_request['name'], url=json_request['url'])
+    except Wishlist.DoesNotExist:
+        pass
+
+    return JsonResponse({})
 
 def update_item(request, wishlist_id):
     pass
@@ -38,4 +54,5 @@ def delete_item(request, item_id):
         item.delete()
     except WishlistItem.DoesNotExist:
         pass
+
     return JsonResponse({})

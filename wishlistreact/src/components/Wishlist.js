@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import WishlistList from './WishlistList';
 import WishlistDetail from './WishlistDetail';
-import Dialog from './Dialog';
 
 class Wishlist extends Component {
   constructor(props) {
     super(props);
+    
     this.handleListClick = this.handleListClick.bind(this);
+    this.handleLoadLists = this.handleLoadLists.bind(this);
   }
 
   state = {
@@ -17,6 +18,10 @@ class Wishlist extends Component {
   };
 
   componentDidMount() {
+    this.handleLoadLists();
+  }
+
+  handleLoadLists() {
     fetch('lists/')
       .then(response => { return response.json(); })
       .then(data => {
@@ -36,7 +41,11 @@ class Wishlist extends Component {
     return (
       <div id='main-panel'>
         <div id='left-panel'>
-          <WishlistList currentId={this.state.currentId} lists={this.state.data.results} onListClick={this.handleListClick} />
+          <WishlistList
+            currentId={this.state.currentId}
+            lists={this.state.data.results}
+            onListClick={this.handleListClick}
+            onListChanged={this.handleLoadLists} />
         </div>
         <div id='center-panel'>
           <WishlistDetail id={this.state.currentId} />

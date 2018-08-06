@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 
 class Dialog extends Component {
   static defaultProps = {
+    title: '',
+    buttons: [],
     width: 500,
     height: 400
   }
 
   static propTypes = {
-    title: PropTypes.string.isRequired,
-    buttons: PropTypes.array.isRequired,
     visible: PropTypes.bool.isRequired,
+    title: PropTypes.string,
+    buttons: PropTypes.array,
     width: PropTypes.number,
     height: PropTypes.number
   };

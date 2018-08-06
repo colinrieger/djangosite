@@ -1,30 +1,29 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Dialog from './Dialog';
+import { getCookie } from '../utils';
 
 class WishlistDetail extends Component {
+  constructor(props) {
+    super(props);
+
+    this.closeDialog = this.closeDialog.bind(this);
+    this.openAddItemDialog = this.openAddItemDialog.bind(this);
+    this.handleFormChange = this.handleFormChange.bind(this);
+    this.handleAddItem = this.handleAddItem.bind(this);
+  }
+
   static propTypes = {
     id: PropTypes.number.isRequired
   };
 
   state = {
     details: {},
-    data: []
+    data: [],
+    dialogOpen: false,
+    formName: '',
+    formURL: ''
   };
-
-  getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      let cookies = document.cookie.split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
 
   loadDetails(id) {
     fetch(id  + '/')
@@ -36,19 +35,51 @@ class WishlistDetail extends Component {
     e.preventDefault();
 
     const url = id + '/delete_item';
-    const csrftoken = this.getCookie('csrftoken');
-
     fetch(url, {
       credentials: 'include',
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken
+        'X-CSRFToken': getCookie('csrftoken')
       },
       body: {}
     })
-      .then(response => { this.loadDetails(this.props.id); });
+    .then(response => { this.loadDetails(this.props.id); });
+  }
+
+  closeDialog() {
+    this.setState({ dialogOpen: false, formName: '', formURL: '' });
+  }
+
+  openAddItemDialog() {
+    this.setState({ dialogOpen: true });
+  }
+
+  handleFormChange(event) {
+    const target = event.target;
+    const name = target.name;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+
+    this.setState({ [name]: value });
+  }
+
+  handleAddItem() {
+    const url = this.props.id + '/add_item';
+    fetch(url, {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        'name': this.state.formName,
+        'url': this.state.formURL
+      })
+    })
+    .then(response => { this.closeDialog(); this.loadDetails(this.props.id); });
   }
   
   componentWillReceiveProps(nextProps) {
@@ -60,7 +91,6 @@ class WishlistDetail extends Component {
   render() {
     const buttonStyle = {
       height: 20,
-      width: 50,
       display: 'inline-block',
       position: 'absolute',
       right: 0,
@@ -88,35 +118,68 @@ class WishlistDetail extends Component {
     ];
 
     const header = (
-      <thead key='headers'>
-        <tr style={{ textAlign: 'left' }}>
-          {columns.map(column => <th key={column.key} style={thStyle}>{column.header}</th>)}
-          <th key='delete' style={thStyle}>Delete</th>
-        </tr>
-      </thead>
+      <tr style={{ textAlign: 'left' }}>
+        {columns.map(column => <th key={column.key} style={thStyle}>{column.header}</th>)}
+        <th key='delete' style={thStyle}>Delete</th>
+      </tr>
     );
 
     const rows = this.state.data.map(row =>
-      <tbody key='rows'>
-        <tr key={row.id}>
-          {columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-          <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.handleDelete(row.id, e)}>X</button></td>
-        </tr>
-      </tbody>
+      <tr key={row.id}>
+        {columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
+        <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.handleDelete(row.id, e)}>X</button></td>
+      </tr>
     );
 
     return (
       <div style={{ height: '100%' }}>
         <div style={{ position: 'relative', height: '39px' }}>
           <h4 style={{ display: 'inline-block' }}>{this.state.details.name}</h4>
-          <button style={buttonStyle}>Add</button>
+          <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
         <div id='wishlist'>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            {header}
-            {rows}
+            <thead key='headers'>
+              {header}
+            </thead>
+            <tbody key='rows'>
+              {rows}
+            </tbody>
           </table>
         </div>
+        <Dialog
+          visible={this.state.dialogOpen}
+          title='Add Item'
+          buttons={[
+            {
+              'name': 'Add',
+              'handler': this.handleAddItem
+            },
+            {
+              'name': 'Cancel',
+              'handler': this.closeDialog
+            }
+          ]}
+          width={400}
+          height={200}>
+          <label>
+            Name:
+            <input
+              name="formName"
+              type="text"
+              value={this.state.formName}
+              onChange={this.handleFormChange} />
+          </label>
+          <br />
+          <label>
+            URL:
+            <input
+              name="formURL"
+              type="text"
+              value={this.state.formURL}
+              onChange={this.handleFormChange} />
+          </label>
+        </Dialog>
       </div>
     );
   }
