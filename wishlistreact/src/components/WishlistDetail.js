@@ -10,14 +10,14 @@ class WishlistDetail extends Component {
 
     this.closeDialog = this.closeDialog.bind(this);
     this.openAddItemDialog = this.openAddItemDialog.bind(this);
-    this.openDeletetemDialog = this.openDeletetemDialog.bind(this);
+    this.openDeleteItemDialog = this.openDeleteItemDialog.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
   }
 
   static propTypes = {
-    id: PropTypes.number.isRequired
+    currentId: PropTypes.number.isRequired
   }
 
   state = {
@@ -29,7 +29,7 @@ class WishlistDetail extends Component {
     formURL: ''
   }
 
-  loadDetails(id) {
+  handleLoadDetails(id) {
     fetch(id  + '/')
     .then(response => { return response.json(); })
     .then(data => { this.setState({ details: data.details, data: data.results }); });
@@ -43,7 +43,7 @@ class WishlistDetail extends Component {
     this.setState({ dialogOpen: 'addItem' });
   }
 
-  openDeletetemDialog(id, e) {
+  openDeleteItemDialog(id) {
     this.setState({ dialogOpen: 'deleteItem', pendingItemId: id });
   }
 
@@ -56,7 +56,7 @@ class WishlistDetail extends Component {
   }
 
   handleAddItem() {
-    const url = this.props.id + '/add_item';
+    const url = this.props.currentId + '/add_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -70,7 +70,7 @@ class WishlistDetail extends Component {
         'url': this.state.formURL
       })
     })
-    .then(response => { this.closeDialog(); this.loadDetails(this.props.id); });
+    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
   }
 
   handleDeleteItem() {
@@ -85,12 +85,12 @@ class WishlistDetail extends Component {
       },
       body: {}
     })
-    .then(response => { this.closeDialog(); this.loadDetails(this.props.id); });
+    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
   }
   
   componentWillReceiveProps(nextProps) {
-    if (nextProps.id >= 0) {
-      this.loadDetails(nextProps.id);
+    if (nextProps.currentId >= 0) {
+      this.handleLoadDetails(nextProps.currentId);
     }
   }
 
@@ -168,7 +168,7 @@ class WishlistDetail extends Component {
           <h4 style={{ display: 'inline-block' }}>{this.state.details.name}</h4>
           <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
-        <WishlistItemTable data={this.state.data} onDeleteItem={this.openDeletetemDialog} />
+        <WishlistItemTable data={this.state.data} onDeleteItem={this.openDeleteItemDialog} />
         {addItemDialog}
         {deleteItemDialog}
       </div>

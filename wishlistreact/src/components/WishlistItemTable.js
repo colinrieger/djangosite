@@ -39,7 +39,7 @@ class WishlistItemTable extends Component {
     const rows = this.props.data.map(row =>
       <tr key={row.id}>
         {columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-        <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(row.id, e)}>X</button></td>
+        <td key={'delete' + row.id} style={tdStyle}><button onClick={() => this.props.onDeleteItem(row.id)}>X</button></td>
       </tr>
     );
 

@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     path('', index.index, name='index'),
-    path('lists/', wishlist.lists, name='lists'),
+    path('wishlists/', wishlist.wishlists, name='wishlists'),
     path('add/', wishlist.add, name='add'),
     path('<int:wishlist_id>/', wishlist.detail, name='detail'),
     path('<int:wishlist_id>/update', wishlist.update, name='update'),

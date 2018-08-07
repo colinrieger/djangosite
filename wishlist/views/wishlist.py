@@ -3,7 +3,7 @@ from wishlist.models import Wishlist, WishlistItem
 from django.forms.models import model_to_dict
 import json
 
-def lists(request):
+def wishlists(request):
     return JsonResponse({"results": list(Wishlist.objects.all().values())})
 
 def add(request):
