@@ -10,6 +10,7 @@ class WishlistDetail extends Component {
 
     this.closeDialog = this.closeDialog.bind(this);
     this.openAddItemDialog = this.openAddItemDialog.bind(this);
+    this.openDeletetemDialog = this.openDeletetemDialog.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleAddItem = this.handleAddItem.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
@@ -22,7 +23,8 @@ class WishlistDetail extends Component {
   state = {
     details: {},
     data: [],
-    dialogOpen: false,
+    dialogOpen: '',
+    pendingItemId: -1,
     formName: '',
     formURL: ''
   }
@@ -34,11 +36,15 @@ class WishlistDetail extends Component {
   }
 
   closeDialog() {
-    this.setState({ dialogOpen: false, formName: '', formURL: '' });
+    this.setState({ dialogOpen: '', pendingItemId: -1, formName: '', formURL: '' });
   }
 
   openAddItemDialog() {
-    this.setState({ dialogOpen: true });
+    this.setState({ dialogOpen: 'addItem' });
+  }
+
+  openDeletetemDialog(id, e) {
+    this.setState({ dialogOpen: 'deleteItem', pendingItemId: id });
   }
 
   handleFormChange(event) {
@@ -67,10 +73,8 @@ class WishlistDetail extends Component {
     .then(response => { this.closeDialog(); this.loadDetails(this.props.id); });
   }
 
-  handleDeleteItem(id, e) {
-    e.preventDefault();
-
-    const url = id + '/delete_item';
+  handleDeleteItem() {
+    const url = this.state.pendingItemId + '/delete_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -81,7 +85,7 @@ class WishlistDetail extends Component {
       },
       body: {}
     })
-    .then(response => { this.loadDetails(this.props.id); });
+    .then(response => { this.closeDialog(); this.loadDetails(this.props.id); });
   }
   
   componentWillReceiveProps(nextProps) {
@@ -104,7 +108,7 @@ class WishlistDetail extends Component {
     /* components */
     const addItemDialog = (
       <Dialog
-        visible={this.state.dialogOpen}
+        visible={this.state.dialogOpen === 'addItem'}
         title='Add Item'
         buttons={[
           {
@@ -138,14 +142,35 @@ class WishlistDetail extends Component {
       </Dialog>
     );
 
+    const deleteItemDialog = (
+      <Dialog
+        visible={this.state.dialogOpen === 'deleteItem'}
+        title='Delete Item'
+        buttons={[
+          {
+            'name': 'Delete',
+            'handler': this.handleDeleteItem
+          },
+          {
+            'name': 'Cancel',
+            'handler': this.closeDialog
+          }
+        ]}
+        width={400}
+        height={200}>
+        Delete this item?
+      </Dialog>
+    );
+
     return (
       <div style={{ height: '100%' }}>
         <div style={{ position: 'relative', height: '39px' }}>
           <h4 style={{ display: 'inline-block' }}>{this.state.details.name}</h4>
           <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
-        <WishlistItemTable data={this.state.data} onDeleteItem={this.handleDeleteItem} />
+        <WishlistItemTable data={this.state.data} onDeleteItem={this.openDeletetemDialog} />
         {addItemDialog}
+        {deleteItemDialog}
       </div>
     );
   }
