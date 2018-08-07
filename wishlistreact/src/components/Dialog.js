@@ -2,31 +2,25 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class Dialog extends Component {
+  static propTypes = {
+    visible: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    buttons: PropTypes.array.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number
+  }
+
   static defaultProps = {
-    title: '',
-    buttons: [],
     width: 500,
     height: 400
   }
-
-  static propTypes = {
-    visible: PropTypes.bool.isRequired,
-    title: PropTypes.string,
-    buttons: PropTypes.array,
-    width: PropTypes.number,
-    height: PropTypes.number
-  };
-
-  state = {
-    details: {},
-    data: []
-  };
 
   render() {
     if (!this.props.visible) {
       return null;
     }
 
+    /* styles */
     const modalStyle = {
       backgroundColor: 'rgba(0,0,0,0.3)',
       position: 'fixed',
@@ -70,6 +64,7 @@ class Dialog extends Component {
       marginLeft: 5
     };
 
+    /* components */
     const buttons = (
       <div style={{ float: 'right' }}>
         {this.props.buttons.map(button => <button key={button.name} onClick={button.handler} style={buttonStyle}>{button.name}</button>)}
@@ -77,15 +72,15 @@ class Dialog extends Component {
     );
 
     return (
-        <div style={modalStyle}>
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-            <div style={dialogStyle}>
-              <div style={titleStyle}>{this.props.title}</div>
-              <div style={childrenStyle}>{this.props.children}</div>
-              <div style={buttonBarStyle}>{buttons}</div>
-            </div>
+      <div style={modalStyle}>
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <div style={dialogStyle}>
+            <div style={titleStyle}>{this.props.title}</div>
+            <div style={childrenStyle}>{this.props.children}</div>
+            <div style={buttonBarStyle}>{buttons}</div>
           </div>
         </div>
+      </div>
     );
   }
 }

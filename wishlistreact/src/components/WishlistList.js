@@ -15,7 +15,7 @@ class WishlistList extends Component {
 
   static propTypes = {
     currentId: PropTypes.number.isRequired,
-    lists: PropTypes.array.isRequired,
+    wishlists: PropTypes.array.isRequired,
     onListClick: PropTypes.func.isRequired,
     onListChanged: PropTypes.func.isRequired
   };
@@ -59,6 +59,7 @@ class WishlistList extends Component {
   }
 
   render() {
+    /* styles */
     const buttonStyle = {
       height: 20,
       display: 'inline-block',
@@ -68,17 +69,45 @@ class WishlistList extends Component {
       marginBottom: 10
     };
 
-    const inactive = {
+    const inactiveStyle = {
       color: '#000'
     };
 
-    const active = {
+    const activeStyle = {
       backgroundColor: '#2e7da3',
       color: '#fff'
     };
 
-    const lists = this.props.lists.map(item =>
-      <li key={item.id} style={ (this.props.currentId === item.id) ? active : inactive } onClick={() => this.props.onListClick(item.id)}>{item.name}</li>
+    /* components */
+    const wishlists = this.props.wishlists.map(wishlist =>
+      <li key={wishlist.id} style={ (this.props.currentId === wishlist.id) ? activeStyle : inactiveStyle } onClick={() => this.props.onListClick(wishlist.id)}>{wishlist.name}</li>
+    );
+
+    const createWishlistDialog = (
+      <Dialog
+        visible={this.state.dialogOpen}
+        title='Create Wishlist'
+        buttons={[
+          {
+            'name': 'Create',
+            'handler': this.handleCreateWishlist
+          },
+          {
+            'name': 'Cancel',
+            'handler': this.closeDialog
+          }
+        ]}
+        width={400}
+        height={200}>
+        <label>
+          Name:
+          <input
+            name="formName"
+            type="text"
+            value={this.state.formName}
+            onChange={this.handleFormChange} />
+        </label>
+      </Dialog>
     );
 
     return (
@@ -89,33 +118,10 @@ class WishlistList extends Component {
         </div>
         <div id='wishlists'>
           <ul>
-            {lists}
+            {wishlists}
           </ul>
         </div>
-        <Dialog
-          visible={this.state.dialogOpen}
-          title='Create Wishlist'
-          buttons={[
-            {
-              'name': 'Create',
-              'handler': this.handleCreateWishlist
-            },
-            {
-              'name': 'Cancel',
-              'handler': this.closeDialog
-            }
-          ]}
-          width={400}
-          height={200}>
-          <label>
-            Name:
-            <input
-              name="formName"
-              type="text"
-              value={this.state.formName}
-              onChange={this.handleFormChange} />
-          </label>
-        </Dialog>
+        {createWishlistDialog}
       </div>
     );
   }

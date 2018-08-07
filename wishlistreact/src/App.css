@@ -28,7 +28,7 @@
     vertical-align: top;
 }
 
-#wishlists, #wishlist {
+#wishlists, #wishlistitems {
     height: calc(100% - 39px); /* minus header height/margin */
     border: 1px solid black;
     overflow-x: hidden;

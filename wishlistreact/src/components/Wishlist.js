@@ -43,7 +43,7 @@ class Wishlist extends Component {
         <div id='left-panel'>
           <WishlistList
             currentId={this.state.currentId}
-            lists={this.state.data.results}
+            wishlists={this.state.data.results}
             onListClick={this.handleListClick}
             onListChanged={this.handleLoadLists} />
         </div>
