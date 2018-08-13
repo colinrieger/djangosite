@@ -118,6 +118,11 @@ class Wishlist extends Component {
       marginBottom: 10
     };
 
+    const labelStyle = {
+      width: 100,
+      display: 'inline-block'
+    }
+
     /* components */
     const createWishlistDialog = (
       <Dialog
@@ -135,14 +140,12 @@ class Wishlist extends Component {
         ]}
         width={400}
         height={200}>
-        <label>
-          Name:
-          <input
-            name="formName"
-            type="text"
-            value={this.state.formName}
-            onChange={this.handleFormChange} />
-        </label>
+        <label style={labelStyle}>Name:</label>
+        <input
+          name="formName"
+          type="text"
+          value={this.state.formName}
+          onChange={this.handleFormChange} />
       </Dialog>
     );
 
