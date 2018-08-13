@@ -24,7 +24,15 @@ def detail(request, wishlist_id):
     return JsonResponse({"details": model_to_dict(wishlist), "results": results})
 
 def update(request, wishlist_id):
-    pass
+    try:
+        json_request = json.loads(request.body.decode("utf-8"))
+        wishlist = Wishlist.objects.get(id=wishlist_id)
+        wishlist.name = json_request['name']
+        wishlist.save()
+    except Wishlist.DoesNotExist:
+        pass
+
+    return JsonResponse({})
 
 def delete(request, wishlist_id):
     try: 
@@ -45,8 +53,17 @@ def add_item(request, wishlist_id):
 
     return JsonResponse({})
 
-def update_item(request, wishlist_id):
-    pass
+def update_item(request, item_id):
+    try:
+        json_request = json.loads(request.body.decode("utf-8"))
+        item = WishlistItem.objects.get(id=item_id)
+        item.name = json_request['name']
+        item.url = json_request['url']
+        item.save()
+    except WishlistItem.DoesNotExist:
+        pass
+
+    return JsonResponse({})
 
 def delete_item(request, item_id):
     try: 

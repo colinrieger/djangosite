@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 class WishlistItemTable extends Component {
   static propTypes = {
     data: PropTypes.array.isRequired,
+    onItemClick: PropTypes.func.isRequired,
     onDeleteItem: PropTypes.func.isRequired
   }
 
@@ -37,9 +38,9 @@ class WishlistItemTable extends Component {
     );
 
     const rows = this.props.data.map(row =>
-      <tr key={row.id}>
+      <tr key={row.id} onClick={() => this.props.onItemClick(row)}>
         {columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-        <td key={'delete' + row.id} style={tdStyle}><button onClick={() => this.props.onDeleteItem(row.id)}>X</button></td>
+        <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(row.id, e)}>X</button></td>
       </tr>
     );
 

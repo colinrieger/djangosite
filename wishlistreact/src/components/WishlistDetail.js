@@ -10,14 +10,17 @@ class WishlistDetail extends Component {
 
     this.closeDialog = this.closeDialog.bind(this);
     this.openAddItemDialog = this.openAddItemDialog.bind(this);
+    this.openUpdateItemDialog = this.openUpdateItemDialog.bind(this);
     this.openDeleteItemDialog = this.openDeleteItemDialog.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleAddItem = this.handleAddItem.bind(this);
+    this.handleUpdateItem = this.handleUpdateItem.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
   }
 
   static propTypes = {
-    currentId: PropTypes.number.isRequired
+    currentId: PropTypes.number.isRequired,
+    onUpdateWishlist: PropTypes.func.isRequired
   }
 
   state = {
@@ -43,7 +46,12 @@ class WishlistDetail extends Component {
     this.setState({ dialogOpen: 'addItem' });
   }
 
-  openDeleteItemDialog(id) {
+  openUpdateItemDialog(item) {
+    this.setState({ dialogOpen: 'updateItem', pendingItemId: item.id, formName: item.name, formURL: item.url });
+  }
+
+  openDeleteItemDialog(id, e) {
+    e.stopPropagation();
     this.setState({ dialogOpen: 'deleteItem', pendingItemId: id });
   }
 
@@ -57,6 +65,24 @@ class WishlistDetail extends Component {
 
   handleAddItem() {
     const url = this.props.currentId + '/add_item';
+    fetch(url, {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        'name': this.state.formName,
+        'url': this.state.formURL
+      })
+    })
+    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
+  }
+
+  handleUpdateItem() {
+    const url = this.state.pendingItemId + '/update_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -111,6 +137,24 @@ class WishlistDetail extends Component {
     }
 
     /* components */
+    const itemForm = (
+      <div>
+        <label style={labelStyle}>Name:</label>
+        <input
+          name="formName"
+          type="text"
+          value={this.state.formName}
+          onChange={this.handleFormChange} />
+        <br />
+        <label style={labelStyle}>URL:</label>
+        <input
+          name="formURL"
+          type="text"
+          value={this.state.formURL}
+          onChange={this.handleFormChange} />
+      </div>
+    );
+
     const addItemDialog = (
       <Dialog
         visible={this.state.dialogOpen === 'addItem'}
@@ -127,19 +171,27 @@ class WishlistDetail extends Component {
         ]}
         width={400}
         height={200}>
-        <label style={labelStyle}>Name:</label>
-        <input
-          name="formName"
-          type="text"
-          value={this.state.formName}
-          onChange={this.handleFormChange} />
-        <br />
-        <label style={labelStyle}>URL:</label>
-        <input
-          name="formURL"
-          type="text"
-          value={this.state.formURL}
-          onChange={this.handleFormChange} />
+        {itemForm}
+      </Dialog>
+    );
+
+    const updateItemDialog = (
+      <Dialog
+        visible={this.state.dialogOpen === 'updateItem'}
+        title='Update Item'
+        buttons={[
+          {
+            'name': 'Update',
+            'handler': this.handleUpdateItem
+          },
+          {
+            'name': 'Cancel',
+            'handler': this.closeDialog
+          }
+        ]}
+        width={400}
+        height={200}>
+        {itemForm}
       </Dialog>
     );
 
@@ -166,11 +218,12 @@ class WishlistDetail extends Component {
     return (
       <div style={{ height: '100%' }}>
         <div style={{ position: 'relative', height: '39px' }}>
-          <h4 style={{ display: 'inline-block' }}>{this.state.details.name}</h4>
+          <h4 style={{ display: 'inline-block' }} onClick={() => this.props.onUpdateWishlist(this.state.details)}>{this.state.details.name}</h4>
           <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
-        <WishlistItemTable data={this.state.data} onDeleteItem={this.openDeleteItemDialog} />
+        <WishlistItemTable data={this.state.data} onItemClick={this.openUpdateItemDialog} onDeleteItem={this.openDeleteItemDialog} />
         {addItemDialog}
+        {updateItemDialog}
         {deleteItemDialog}
       </div>
     );

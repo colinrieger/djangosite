@@ -12,9 +12,11 @@ class Wishlist extends Component {
     this.handleWishlistClick = this.handleWishlistClick.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
     this.openCreateWishlistDialog = this.openCreateWishlistDialog.bind(this);
+    this.openUpdateWishlistDialog = this.openUpdateWishlistDialog.bind(this);
     this.openDeleteWishlistDialog = this.openDeleteWishlistDialog.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleCreateWishlist = this.handleCreateWishlist.bind(this);
+    this.handleUpdateWishlist = this.handleUpdateWishlist.bind(this);
     this.handleDeleteWishlist = this.handleDeleteWishlist.bind(this);
   }
 
@@ -52,6 +54,10 @@ class Wishlist extends Component {
     this.setState({ dialogOpen: 'createWishlist' });
   }
 
+  openUpdateWishlistDialog(wishlist) {
+    this.setState({ dialogOpen: 'updateWishlist', pendingWishlistId: wishlist.id, formName: wishlist.name });
+  }
+
   openDeleteWishlistDialog(id, e) {
     e.stopPropagation();
     this.setState({ dialogOpen: 'deleteWishlist', pendingWishlistId: id });
@@ -67,6 +73,23 @@ class Wishlist extends Component {
 
   handleCreateWishlist() {
     const url = 'add/';
+    fetch(url, {
+      credentials: 'include',
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        'name': this.state.formName
+      })
+    })
+    .then(response => { this.closeDialog(); this.handleLoadWishlists(); });
+  }
+
+  handleUpdateWishlist() {
+    const url = this.state.pendingWishlistId + '/update';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -124,6 +147,17 @@ class Wishlist extends Component {
     }
 
     /* components */
+    const wishlistForm = (
+      <div>
+        <label style={labelStyle}>Name:</label>
+        <input
+          name="formName"
+          type="text"
+          value={this.state.formName}
+          onChange={this.handleFormChange} />
+      </div>
+    );
+
     const createWishlistDialog = (
       <Dialog
       visible={this.state.dialogOpen === 'createWishlist'}
@@ -140,12 +174,27 @@ class Wishlist extends Component {
         ]}
         width={400}
         height={200}>
-        <label style={labelStyle}>Name:</label>
-        <input
-          name="formName"
-          type="text"
-          value={this.state.formName}
-          onChange={this.handleFormChange} />
+        {wishlistForm}
+      </Dialog>
+    );
+
+    const updateWishlistDialog = (
+      <Dialog
+      visible={this.state.dialogOpen === 'updateWishlist'}
+        title='Update Wishlist'
+        buttons={[
+          {
+            'name': 'Update',
+            'handler': this.handleUpdateWishlist
+          },
+          {
+            'name': 'Cancel',
+            'handler': this.closeDialog
+          }
+        ]}
+        width={400}
+        height={200}>
+        {wishlistForm}
       </Dialog>
     );
 
@@ -185,10 +234,11 @@ class Wishlist extends Component {
           </div>
         </div>
         <div id='center-panel'>
-          <WishlistDetail currentId={this.state.currentId} />
+          <WishlistDetail currentId={this.state.currentId} onUpdateWishlist={this.openUpdateWishlistDialog} />
         </div>
         <div id='right-panel'></div>
         {createWishlistDialog}
+        {updateWishlistDialog}
         {deleteWishlistDialog}
       </div>
     );
