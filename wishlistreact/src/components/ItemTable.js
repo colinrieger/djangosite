@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-class WishlistItemTable extends Component {
+class ItemTable extends Component {
   static propTypes = {
+    className: PropTypes.string,
+    columns: PropTypes.array.isRequired,
     data: PropTypes.array.isRequired,
     onItemClick: PropTypes.func.isRequired,
-    onDeleteItem: PropTypes.func.isRequired
+    onDeleteItem: PropTypes.func
   }
 
   render() {
@@ -19,33 +21,22 @@ class WishlistItemTable extends Component {
     };
 
     /* components */
-    const columns = [
-      {
-        'key': 'name',
-        'header': 'Name'
-      },
-      {
-        'key': 'url',
-        'header': 'URL'
-      },
-    ];
-
     const headers = (
       <tr style={{ textAlign: 'left' }}>
-        {columns.map(column => <th key={column.key} style={thStyle}>{column.header}</th>)}
-        <th key='delete' style={thStyle}>Delete</th>
+        {this.props.columns.map(column => <th key={column.key} style={thStyle}>{column.header}</th>)}
+        { this.props.onDeleteItem ? <th key='delete' style={thStyle}>Delete</th> : "" }
       </tr>
     );
 
     const rows = this.props.data.map(row =>
       <tr key={row.id} onClick={() => this.props.onItemClick(row)}>
-        {columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-        <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(row.id, e)}>X</button></td>
+        {this.props.columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
+        { this.props.onDeleteItem ? <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(row.id, e)}>X</button></td> : "" }
       </tr>
     );
 
     return (
-      <div id='wishlistitems'>
+      <div className={this.props.className}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead key='headers'>
             {headers}
@@ -59,4 +50,4 @@ class WishlistItemTable extends Component {
   }
 }
 
-export default WishlistItemTable;
+export default ItemTable;

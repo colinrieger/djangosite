@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import WishlistItemTable from './WishlistItemTable';
+import ItemTable from './ItemTable';
 import Dialog from './Dialog';
 import { getCookie } from '../utils';
 
@@ -155,6 +155,17 @@ class WishlistDetail extends Component {
       </div>
     );
 
+    const tableColumns = [
+      {
+        'key': 'name',
+        'header': 'Name'
+      },
+      {
+        'key': 'url',
+        'header': 'URL'
+      },
+    ];
+
     const addItemDialog = (
       <Dialog
         visible={this.state.dialogOpen === 'addItem'}
@@ -221,7 +232,12 @@ class WishlistDetail extends Component {
           <h4 style={{ display: 'inline-block' }} onClick={() => this.props.onUpdateWishlist(this.state.details)}>{this.state.details.name}</h4>
           <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
-        <WishlistItemTable data={this.state.data} onItemClick={this.openUpdateItemDialog} onDeleteItem={this.openDeleteItemDialog} />
+        <ItemTable
+          className='wishlistitems'
+          columns={tableColumns}
+          data={this.state.data}
+          onItemClick={this.openUpdateItemDialog}
+          onDeleteItem={this.openDeleteItemDialog} />
         {addItemDialog}
         {updateItemDialog}
         {deleteItemDialog}

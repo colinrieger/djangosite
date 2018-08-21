@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import WishlistList from './WishlistList';
+import ItemList from './ItemList';
 import WishlistDetail from './WishlistDetail';
 import Dialog from './Dialog';
 import { getCookie } from '../utils';
@@ -226,11 +226,12 @@ class Wishlist extends Component {
               <h4 style={{ display: 'inline-block' }}>Wishlists</h4>
               <button style={buttonStyle} onClick={this.openCreateWishlistDialog}>Create</button>
             </div>
-            <WishlistList
+            <ItemList
+              className='wishlists'
               currentId={this.state.currentId}
-              wishlists={this.state.data.results}
-              onWishlistClick={this.handleWishlistClick}
-              onDeleteWishlist={this.openDeleteWishlistDialog} />
+              items={this.state.data.results}
+              onItemClick={this.handleWishlistClick}
+              onDeleteItem={this.openDeleteWishlistDialog} />
           </div>
         </div>
         <div id='center-panel'>
