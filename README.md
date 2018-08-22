@@ -49,11 +49,11 @@ Wishlist: [`https://djangosite.colinrieger.com/wishlist`](https://djangosite.col
 - Run Django Server
   ```
   cd <repo root path>
-  python manage.py runserver
+  python manage.py runserver 0:8000
   ```
 - Run wishlistreact
   ```
   cd <repo root path>/wishlistreact
   BROWSER=none npm run start
   ```
-  
+  [http://localhost:8000/](http://localhost:8000/)
