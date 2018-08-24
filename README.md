@@ -34,7 +34,6 @@ Wishlist: [`https://djangosite.colinrieger.com/wishlist`](https://djangosite.col
   ```
 - Migrate Database
   ```
-  python manage.py makemigrations
   python manage.py migrate
   ```
 - Create Admin Account
