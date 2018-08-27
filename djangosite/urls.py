@@ -16,9 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
+from djangosite import views
 
 urlpatterns = [
     path('', RedirectView.as_view(url='wishlist/')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/signup', views.signup, name='signup'),
     path('admin/', admin.site.urls),
     path('wishlist/', include('wishlist.urls')),
 ]

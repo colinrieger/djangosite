@@ -2,8 +2,9 @@ from django.urls import path
 
 from .views import *
 
+app_name = 'wishlist'
 urlpatterns = [
-    path('', index.index, name='index'),
+    path('', views.index, name='index'),
     path('wishlists/', wishlist.wishlists, name='wishlists'),
     path('add/', wishlist.add, name='add'),
     path('<int:wishlist_id>/', wishlist.detail, name='detail'),

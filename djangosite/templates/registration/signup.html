@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id='login-panel-container'>
+  <div id='login-panel'>
+    <div id='login-panel-title'>Sign Up</div>
+    <form style='height: 100%' method='post' action='{% url 'signup' %}'>
+      <div id='login-panel-form'>
+        {% csrf_token %}
+        <table>
+          <tr>
+            <th>{{ form.username.label_tag }}</th>
+            <td>{{ form.username }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">{{ form.username.errors }}</td>
+          </tr>
+          <tr>
+            <th>{{ form.email.label_tag }}</th>
+            <td>{{ form.email }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">{{ form.email.errors }}</td>
+          </tr>
+          <tr>
+            <th>{{ form.password1.label_tag }}</th>
+            <td>{{ form.password1 }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">{{ form.password1.errors }}</td>
+          </tr>
+          <tr>
+            <th><label for="id_password2">Confirm password:</label></th>
+            <td>{{ form.password2 }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">{{ form.password2.errors }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">{{ form.non_field_errors }}</td>
+          </tr>
+        </table>
+      </div>
+      <div id='login-panel-linkbar'>
+        <div>
+          <a href='{% url 'login' %}'>Login</a>
+          <a href='{% url 'password_reset' %}'>Reset</a>
+        </div>
+      </div>
+      <div id='login-panel-buttonbar'>
+        {% if form.errors %}<span style='color:darkred; display: inline-block'>Sign Up failed.</span>{% endif %}
+        <input style='float: right' type='submit' value='Sign Up' />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

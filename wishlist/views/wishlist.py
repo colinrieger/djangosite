@@ -4,11 +4,11 @@ from django.forms.models import model_to_dict
 import json
 
 def wishlists(request):
-    return JsonResponse({"results": list(Wishlist.objects.all().values())})
+    return JsonResponse({"results": list(Wishlist.objects.filter(user=request.user).values())})
 
 def add(request):
     json_request = json.loads(request.body.decode("utf-8"))
-    wishlist = Wishlist(name=json_request['name'])
+    wishlist = Wishlist(user=request.user, name=json_request['name'])
     wishlist.save()
 
     return JsonResponse({})

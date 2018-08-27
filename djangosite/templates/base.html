@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <div id='navbar'>
+      <div id='navbar-profile'>
+        {% if user.is_authenticated %}
+          {{ user.get_username }} (<a href="{% url 'logout' %}?next={{request.path}}">Log Out</a>)
+        {% endif %}
+      </div>
+    </div>
+    <div id='content'>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
