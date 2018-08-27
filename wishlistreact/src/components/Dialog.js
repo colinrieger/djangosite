@@ -43,7 +43,7 @@ class Dialog extends Component {
 
     const titleStyle = {
       height: 30,
-      widht: '100%',
+      width: '100%',
       borderBottom: '1px solid gray',
       padding: '5px 10px'
     }
