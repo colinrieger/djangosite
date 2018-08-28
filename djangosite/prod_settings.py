@@ -8,6 +8,7 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
 STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'djangosite', 'static'),
     os.path.join(BASE_DIR, "assets"),
 ]
 
