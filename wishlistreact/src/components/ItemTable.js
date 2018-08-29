@@ -5,7 +5,7 @@ class ItemTable extends Component {
   static propTypes = {
     className: PropTypes.string,
     columns: PropTypes.array.isRequired,
-    data: PropTypes.array.isRequired,
+    items: PropTypes.array.isRequired,
     onItemClick: PropTypes.func.isRequired,
     onDeleteItem: PropTypes.func
   }
@@ -28,10 +28,10 @@ class ItemTable extends Component {
       </tr>
     );
 
-    const rows = this.props.data.map(row =>
-      <tr key={row.id} onClick={() => this.props.onItemClick(row)}>
+    const rows = this.props.items.map((row, index) =>
+      <tr key={row.id} onClick={() => this.props.onItemClick(index)}>
         {this.props.columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-        { this.props.onDeleteItem ? <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(row.id, e)}>X</button></td> : "" }
+        { this.props.onDeleteItem ? <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(index, e)}>X</button></td> : "" }
       </tr>
     );
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class ItemList extends Component {
   static propTypes = {
     className: PropTypes.string,
-    currentId: PropTypes.number.isRequired,
+    selectedIndex: PropTypes.number.isRequired,
     items: PropTypes.array.isRequired,
     onItemClick: PropTypes.func.isRequired,
     onDeleteItem: PropTypes.func
@@ -29,10 +29,10 @@ class ItemList extends Component {
     };
 
     /* components */
-    const items = this.props.items.map(item =>
-      <li key={item.id} style={ (this.props.currentId === item.id) ? activeStyle : inactiveStyle } onClick={() => this.props.onItemClick(item.id)}>
+    const items = this.props.items.map((item, index) =>
+      <li key={item.id} style={ (this.props.selectedIndex === index) ? activeStyle : inactiveStyle } onClick={() => this.props.onItemClick(index)}>
         {item.name}
-        { this.props.onDeleteItem ? <button style={buttonStyle} onClick={(e) => this.props.onDeleteItem(item.id, e)}>X</button> : "" }
+        { this.props.onDeleteItem ? <button style={buttonStyle} onClick={(e) => this.props.onDeleteItem(index, e)}>X</button> : "" }
       </li>
     );
 

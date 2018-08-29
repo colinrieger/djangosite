@@ -19,23 +19,17 @@ class WishlistDetail extends Component {
   }
 
   static propTypes = {
-    currentId: PropTypes.number.isRequired,
-    onUpdateWishlist: PropTypes.func.isRequired
+    currentIndex: PropTypes.number.isRequired,
+    wishlist: PropTypes.object.isRequired,
+    onUpdateWishlist: PropTypes.func.isRequired,
+    onWishlistChange: PropTypes.func.isRequired
   }
 
   state = {
-    details: {},
-    data: [],
     dialogOpen: '',
-    pendingItemId: -1,
+    pendingItemIndex: -1,
     formName: '',
     formURL: ''
-  }
-
-  handleLoadDetails(id) {
-    fetch(id  + '/')
-    .then(response => { return response.json(); })
-    .then(data => { this.setState({ details: data.details, data: data.results }); });
   }
 
   closeDialog() {
@@ -46,13 +40,15 @@ class WishlistDetail extends Component {
     this.setState({ dialogOpen: 'addItem' });
   }
 
-  openUpdateItemDialog(item) {
-    this.setState({ dialogOpen: 'updateItem', pendingItemId: item.id, formName: item.name, formURL: item.url });
+  openUpdateItemDialog(index) {
+    let item = this.props.wishlist.items[index];
+    this.setState({ dialogOpen: 'updateItem', pendingItemIndex: index, formName: item.name, formURL: item.url });
   }
 
-  openDeleteItemDialog(id, e) {
+  openDeleteItemDialog(index, e) {
     e.stopPropagation();
-    this.setState({ dialogOpen: 'deleteItem', pendingItemId: id });
+    let item = this.props.wishlist.items[index];
+    this.setState({ dialogOpen: 'deleteItem', pendingItemIndex: index, formName: item.name });
   }
 
   handleFormChange(event) {
@@ -64,7 +60,7 @@ class WishlistDetail extends Component {
   }
 
   handleAddItem() {
-    const url = this.props.currentId + '/add_item';
+    const url = this.props.wishlist.id + '/add_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -78,11 +74,16 @@ class WishlistDetail extends Component {
         'url': this.state.formURL
       })
     })
-    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
+    .then(response => { return response.json(); })
+    .then(data => {
+      this.props.onWishlistChange('update', data.wishlist);
+      this.closeDialog();
+    });
   }
 
   handleUpdateItem() {
-    const url = this.state.pendingItemId + '/update_item';
+    let item = this.props.wishlist.items[this.state.pendingItemIndex];
+    const url = item.id + '/update_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -96,11 +97,16 @@ class WishlistDetail extends Component {
         'url': this.state.formURL
       })
     })
-    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
+    .then(response => { return response.json(); })
+    .then(data => {
+      this.props.onWishlistChange('update', data.wishlist);
+      this.closeDialog();
+     });
   }
 
   handleDeleteItem() {
-    const url = this.state.pendingItemId + '/delete_item';
+    let item = this.props.wishlist.items[this.state.pendingItemIndex];
+    const url = item.id + '/delete_item';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -111,13 +117,11 @@ class WishlistDetail extends Component {
       },
       body: {}
     })
-    .then(response => { this.closeDialog(); this.handleLoadDetails(this.props.currentId); });
-  }
-  
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.currentId >= 0) {
-      this.handleLoadDetails(nextProps.currentId);
-    }
+    .then(response => { return response.json(); })
+    .then(data => {
+      this.props.onWishlistChange('update', data.wishlist);
+      this.closeDialog();
+     });
   }
 
   render() {
@@ -222,20 +226,22 @@ class WishlistDetail extends Component {
         ]}
         width={400}
         height={200}>
-        Delete this item?
+        Delete <b>{this.state.formName}</b> item?
       </Dialog>
     );
+
+    let items = this.props.wishlist.hasOwnProperty('items') ? this.props.wishlist.items : [];
 
     return (
       <div style={{ height: '100%' }}>
         <div style={{ position: 'relative', height: '39px' }}>
-          <h4 style={{ display: 'inline-block' }} onClick={() => this.props.onUpdateWishlist(this.state.details)}>{this.state.details.name}</h4>
+          <h4 style={{ display: 'inline-block' }} onClick={() => this.props.onUpdateWishlist(this.props.currentIndex)}>{this.props.wishlist.name}</h4>
           <button style={buttonStyle} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
         <ItemTable
           className='wishlistitems'
           columns={tableColumns}
-          data={this.state.data}
+          items={items}
           onItemClick={this.openUpdateItemDialog}
           onDeleteItem={this.openDeleteItemDialog} />
         {addItemDialog}

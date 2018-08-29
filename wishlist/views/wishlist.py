@@ -4,31 +4,52 @@ from django.forms.models import model_to_dict
 import json
 
 def wishlists(request):
-    return JsonResponse({"results": list(Wishlist.objects.filter(user=request.user).values())})
+    results = Wishlist.objects.filter(user=request.user)
+
+    wishlists = list(results.values())
+    for wishlist, result  in zip(wishlists, results):
+        wishlist['items'] = list(result.wishlistitem_set.all().values())
+
+    context = {
+        'wishlists': wishlists
+    }
+
+    return JsonResponse(context)
 
 def add(request):
-    json_request = json.loads(request.body.decode("utf-8"))
-    wishlist = Wishlist(user=request.user, name=json_request['name'])
-    wishlist.save()
+    json_request = json.loads(request.body.decode('utf-8'))
 
-    return JsonResponse({})
+    result = Wishlist(
+        user = request.user,
+        name = json_request['name']
+    )
+    result.save()
 
-def detail(request, wishlist_id):
-    results = []
-    try: 
-        wishlist = Wishlist.objects.get(id=wishlist_id)
-        results = list(wishlist.wishlistitem_set.all().values())
-    except Wishlist.DoesNotExist:
-        pass
+    wishlist = model_to_dict(result)
+    wishlist['items'] = []
 
-    return JsonResponse({"details": model_to_dict(wishlist), "results": results})
+    context = {
+        'wishlist': wishlist
+    }
+
+    return JsonResponse(context)
 
 def update(request, wishlist_id):
     try:
-        json_request = json.loads(request.body.decode("utf-8"))
-        wishlist = Wishlist.objects.get(id=wishlist_id)
-        wishlist.name = json_request['name']
-        wishlist.save()
+        json_request = json.loads(request.body.decode('utf-8'))
+
+        result = Wishlist.objects.get(id=wishlist_id)
+        result.name = json_request['name']
+        result.save()
+
+        wishlist = model_to_dict(result)
+        wishlist['items'] = list(result.wishlistitem_set.all().values())
+
+        context = {
+            'wishlist': wishlist
+        }
+
+        return JsonResponse(context)
     except Wishlist.DoesNotExist:
         pass
 
@@ -45,9 +66,22 @@ def delete(request, wishlist_id):
 
 def add_item(request, wishlist_id):
     try:
-        json_request = json.loads(request.body.decode("utf-8"))
-        wishlist = Wishlist.objects.get(id=wishlist_id)
-        wishlist.wishlistitem_set.create(name=json_request['name'], url=json_request['url'])
+        json_request = json.loads(request.body.decode('utf-8'))
+
+        result = Wishlist.objects.get(id=wishlist_id)
+        result.wishlistitem_set.create(
+            name = json_request['name'],
+            url = json_request['url']
+        )
+
+        wishlist = model_to_dict(result)
+        wishlist['items'] = list(result.wishlistitem_set.all().values())
+
+        context = {
+            'wishlist': wishlist
+        }
+
+        return JsonResponse(context)
     except Wishlist.DoesNotExist:
         pass
 
@@ -55,11 +89,22 @@ def add_item(request, wishlist_id):
 
 def update_item(request, item_id):
     try:
-        json_request = json.loads(request.body.decode("utf-8"))
+        json_request = json.loads(request.body.decode('utf-8'))
+
         item = WishlistItem.objects.get(id=item_id)
+        result = item.wishlist
         item.name = json_request['name']
         item.url = json_request['url']
         item.save()
+
+        wishlist = model_to_dict(result)
+        wishlist['items'] = list(result.wishlistitem_set.all().values())
+
+        context = {
+            'wishlist': wishlist
+        }
+
+        return JsonResponse(context)
     except WishlistItem.DoesNotExist:
         pass
 
@@ -68,7 +113,17 @@ def update_item(request, item_id):
 def delete_item(request, item_id):
     try: 
         item = WishlistItem.objects.get(id=item_id)
+        result = item.wishlist
         item.delete()
+
+        wishlist = model_to_dict(result)
+        wishlist['items'] = list(result.wishlistitem_set.all().values())
+
+        context = {
+            'wishlist': wishlist
+        }
+
+        return JsonResponse(context)
     except WishlistItem.DoesNotExist:
         pass
 

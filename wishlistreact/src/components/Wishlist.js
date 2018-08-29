@@ -10,6 +10,7 @@ class Wishlist extends Component {
     
     this.handleLoadWishlists = this.handleLoadWishlists.bind(this);
     this.handleWishlistClick = this.handleWishlistClick.bind(this);
+    this.handleWishlistChange = this.handleWishlistChange.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
     this.openCreateWishlistDialog = this.openCreateWishlistDialog.bind(this);
     this.openUpdateWishlistDialog = this.openUpdateWishlistDialog.bind(this);
@@ -21,12 +22,10 @@ class Wishlist extends Component {
   }
 
   state = {
-    data: {
-      'results': []
-    },
-    currentId: -1,
+    wishlists: [],
+    currentIndex: -1,
+    pendingWishlistIndex: -1,
     dialogOpen: '',
-    pendingWishlistId: -1,
     formName: ''
   }
 
@@ -34,33 +33,59 @@ class Wishlist extends Component {
     fetch('wishlists/')
     .then(response => { return response.json(); })
     .then(data => {
-      let newState = { data: data };
-      if (this.state.currentId < 0 && data.results.length > 0) {
-        newState.currentId = data.results[0].id;
+      let newState = { wishlists: data.wishlists };
+      if (this.state.currentIndex < 0 && data.wishlists.length > 0) {
+        newState.currentIndex = 0;
       }
       this.setState(newState);
     });
   }
 
-  handleWishlistClick(id) {
-    this.setState({ currentId: id });
+  handleWishlistClick(index) {
+    this.setState({ currentIndex: index });
+  }
+
+  handleWishlistChange(action, wishlist = undefined) {
+    let wishlists = this.state.wishlists;
+
+    let newState = {};
+    switch (action) {
+      case 'add':
+        wishlists.push(wishlist);
+        newState.currentIndex = wishlists.length - 1;
+        break;
+      case 'update':
+        wishlists[this.state.currentIndex] = wishlist;
+        break;
+      case 'delete':
+        wishlists.splice(this.state.pendingWishlistIndex, 1);
+        if (this.state.currentIndex === this.state.pendingWishlistIndex) {
+          newState.currentIndex = wishlists.length - 1;
+        }
+        break;
+    }
+
+    newState.wishlists = wishlists;
+    this.setState(newState);
   }
 
   closeDialog() {
-    this.setState({ dialogOpen: false, pendingWishlistId: -1, formName: '' });
+    this.setState({ dialogOpen: '', pendingWishlistIndex: -1, formName: '' });
   }
 
   openCreateWishlistDialog() {
     this.setState({ dialogOpen: 'createWishlist' });
   }
 
-  openUpdateWishlistDialog(wishlist) {
-    this.setState({ dialogOpen: 'updateWishlist', pendingWishlistId: wishlist.id, formName: wishlist.name });
+  openUpdateWishlistDialog(index) {
+    let wishlist = this.state.wishlists[index];
+    this.setState({ dialogOpen: 'updateWishlist', pendingWishlistIndex: index, formName: wishlist.name });
   }
 
-  openDeleteWishlistDialog(id, e) {
+  openDeleteWishlistDialog(index, e) {
     e.stopPropagation();
-    this.setState({ dialogOpen: 'deleteWishlist', pendingWishlistId: id });
+    let wishlist = this.state.wishlists[index];
+    this.setState({ dialogOpen: 'deleteWishlist', pendingWishlistIndex: index, formName: wishlist.name });
   }
 
   handleFormChange(event) {
@@ -85,11 +110,16 @@ class Wishlist extends Component {
         'name': this.state.formName
       })
     })
-    .then(response => { this.closeDialog(); this.handleLoadWishlists(); });
+    .then(response => { return response.json(); })
+    .then(data => {
+      this.handleWishlistChange('add', data.wishlist);
+      this.closeDialog();
+    });
   }
 
   handleUpdateWishlist() {
-    const url = this.state.pendingWishlistId + '/update';
+    let wishlist = this.state.wishlists[this.state.pendingWishlistIndex];
+    const url = wishlist.id + '/update';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -102,11 +132,16 @@ class Wishlist extends Component {
         'name': this.state.formName
       })
     })
-    .then(response => { this.closeDialog(); this.handleLoadWishlists(); });
+    .then(response => { return response.json(); })
+    .then(data => {
+      this.handleWishlistChange('update', data.wishlist);
+      this.closeDialog();
+    });
   }
 
   handleDeleteWishlist() {
-    const url = this.state.pendingWishlistId + '/delete';
+    let wishlist = this.state.wishlists[this.state.pendingWishlistIndex];
+    const url = wishlist.id + '/delete';
     fetch(url, {
       credentials: 'include',
       method: 'POST',
@@ -118,11 +153,8 @@ class Wishlist extends Component {
       body: {}
     })
     .then(response => {
-      if (this.state.currentId === this.state.pendingWishlistId) {
-        this.setState({ currentId: -1 });
-      }
+      this.handleWishlistChange('delete');
       this.closeDialog();
-      this.handleLoadWishlists();
     });
   }
 
@@ -160,7 +192,7 @@ class Wishlist extends Component {
 
     const createWishlistDialog = (
       <Dialog
-      visible={this.state.dialogOpen === 'createWishlist'}
+        visible={this.state.dialogOpen === 'createWishlist'}
         title='Create Wishlist'
         buttons={[
           {
@@ -180,7 +212,7 @@ class Wishlist extends Component {
 
     const updateWishlistDialog = (
       <Dialog
-      visible={this.state.dialogOpen === 'updateWishlist'}
+        visible={this.state.dialogOpen === 'updateWishlist'}
         title='Update Wishlist'
         buttons={[
           {
@@ -214,9 +246,11 @@ class Wishlist extends Component {
         ]}
         width={400}
         height={200}>
-        Delete this wishlist?
+        Delete <b>{this.state.formName}</b> wishlist?
       </Dialog>
     );
+
+    let currentWishlist = (0 <= this.state.currentIndex < this.state.wishlists.length) ? this.state.wishlists[this.state.currentIndex] : {};
 
     return (
       <div id='main-panel'>
@@ -228,14 +262,18 @@ class Wishlist extends Component {
             </div>
             <ItemList
               className='wishlists'
-              currentId={this.state.currentId}
-              items={this.state.data.results}
+              selectedIndex={this.state.currentIndex}
+              items={this.state.wishlists}
               onItemClick={this.handleWishlistClick}
               onDeleteItem={this.openDeleteWishlistDialog} />
           </div>
         </div>
         <div id='center-panel'>
-          <WishlistDetail currentId={this.state.currentId} onUpdateWishlist={this.openUpdateWishlistDialog} />
+          <WishlistDetail
+            currentIndex={this.state.currentIndex}
+            wishlist={currentWishlist}
+            onUpdateWishlist={this.openUpdateWishlistDialog}
+            onWishlistChange={this.handleWishlistChange} />
         </div>
         <div id='right-panel'></div>
         {createWishlistDialog}
