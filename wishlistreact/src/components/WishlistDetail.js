@@ -236,7 +236,7 @@ class WishlistDetail extends Component {
       <div style={{ height: '100%' }}>
         <div style={{ position: 'relative', height: '39px' }}>
           <h4 style={{ display: 'inline-block' }} onClick={() => this.props.onUpdateWishlist(this.props.currentIndex)}>{this.props.wishlist.name}</h4>
-          <button style={buttonStyle} disabled={this.props.currentIndex == -1} onClick={this.openAddItemDialog}>Add Item</button>
+          <button style={buttonStyle} disabled={this.props.currentIndex === -1} onClick={this.openAddItemDialog}>Add Item</button>
         </div>
         <ItemTable
           className='wishlistitems'

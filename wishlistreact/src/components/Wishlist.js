@@ -63,6 +63,8 @@ class Wishlist extends Component {
           newState.currentIndex = wishlists.length - 1;
         }
         break;
+      default:
+        break;
     }
 
     newState.wishlists = wishlists;
