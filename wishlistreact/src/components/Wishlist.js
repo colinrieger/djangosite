@@ -250,7 +250,9 @@ class Wishlist extends Component {
       </Dialog>
     );
 
-    let currentWishlist = (0 <= this.state.currentIndex < this.state.wishlists.length) ? this.state.wishlists[this.state.currentIndex] : {};
+    let currentWishlist = {};
+    if (this.state.currentIndex >= 0 && this.state.currentIndex < this.state.wishlists.length)
+      currentWishlist = this.state.wishlists[this.state.currentIndex];
 
     return (
       <div id='main-panel'>
