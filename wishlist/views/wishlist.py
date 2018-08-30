@@ -7,7 +7,7 @@ def wishlists(request):
     results = Wishlist.objects.filter(user=request.user)
 
     wishlists = list(results.values())
-    for wishlist, result  in zip(wishlists, results):
+    for wishlist, result in zip(wishlists, results):
         wishlist['items'] = list(result.wishlistitem_set.all().values())
 
     context = {

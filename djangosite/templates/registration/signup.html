@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div id='login-panel-container'>
@@ -13,31 +13,31 @@
             <td>{{ form.username }}</td>
           </tr>
           <tr>
-            <td colspan="2">{{ form.username.errors }}</td>
+            <td colspan='2'>{{ form.username.errors }}</td>
           </tr>
           <tr>
             <th>{{ form.email.label_tag }}</th>
             <td>{{ form.email }}</td>
           </tr>
           <tr>
-            <td colspan="2">{{ form.email.errors }}</td>
+            <td colspan='2'>{{ form.email.errors }}</td>
           </tr>
           <tr>
             <th>{{ form.password1.label_tag }}</th>
             <td>{{ form.password1 }}</td>
           </tr>
           <tr>
-            <td colspan="2">{{ form.password1.errors }}</td>
+            <td colspan='2'>{{ form.password1.errors }}</td>
           </tr>
           <tr>
-            <th><label for="id_password2">Confirm password:</label></th>
+            <th><label for='id_password2'>Confirm password:</label></th>
             <td>{{ form.password2 }}</td>
           </tr>
           <tr>
-            <td colspan="2">{{ form.password2.errors }}</td>
+            <td colspan='2'>{{ form.password2.errors }}</td>
           </tr>
           <tr>
-            <td colspan="2">{{ form.non_field_errors }}</td>
+            <td colspan='2'>{{ form.non_field_errors }}</td>
           </tr>
         </table>
       </div>
