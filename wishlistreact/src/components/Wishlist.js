@@ -59,8 +59,8 @@ class Wishlist extends Component {
         break;
       case 'delete':
         wishlists.splice(this.state.pendingWishlistIndex, 1);
-        if (this.state.currentIndex === this.state.pendingWishlistIndex) {
-          newState.currentIndex = wishlists.length - 1;
+        if (this.state.currentIndex >= this.state.pendingWishlistIndex) {
+          newState.currentIndex = this.state.currentIndex - 1;
         }
         break;
       default:
