@@ -29,12 +29,14 @@ class ItemList extends Component {
     };
 
     /* components */
-    const items = this.props.items.map((item, index) =>
-      <li key={item.id} style={ (this.props.selectedIndex === index) ? activeStyle : inactiveStyle } onClick={() => this.props.onItemClick(index)}>
-        {item.name}
-        { this.props.onDeleteItem ? <button style={buttonStyle} onClick={(e) => this.props.onDeleteItem(index, e)}>X</button> : "" }
-      </li>
-    );
+    let items = "";
+    if (this.props.items != null)
+      items = this.props.items.map((item, index) =>
+          <li key={item.id} style={(this.props.selectedIndex === index) ? activeStyle : inactiveStyle} onClick={() => this.props.onItemClick(index)}>
+              {item.name}
+              {this.props.onDeleteItem ? <button style={buttonStyle} onClick={(e) => this.props.onDeleteItem(index, e)}>X</button> : ""}
+          </li>
+      );
 
     return (
       <div className={this.props.className}>

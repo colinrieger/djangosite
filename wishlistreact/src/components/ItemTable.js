@@ -28,12 +28,14 @@ class ItemTable extends Component {
       </tr>
     );
 
-    const rows = this.props.items.map((row, index) =>
-      <tr key={row.id} onClick={() => this.props.onItemClick(index)}>
-        {this.props.columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
-        { this.props.onDeleteItem ? <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(index, e)}>X</button></td> : "" }
-      </tr>
-    );
+    let rows = "";
+    if (this.props.items != null)
+      rows = this.props.items.map((row, index) =>
+        <tr key={row.id} onClick={() => this.props.onItemClick(index)}>
+          {this.props.columns.map(column => <td key={column.key + row.id} style={tdStyle}>{row[column.key]}</td>)}
+          { this.props.onDeleteItem ? <td key={'delete' + row.id} style={tdStyle}><button onClick={(e) => this.props.onDeleteItem(index, e)}>X</button></td> : "" }
+        </tr>
+      );
 
     return (
       <div className={this.props.className}>
