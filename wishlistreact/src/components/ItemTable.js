@@ -17,7 +17,8 @@ class ItemTable extends Component {
     };
 
     const tdStyle = {
-      borderBottom: '1px solid #D3D3D3'
+      borderBottom: '1px solid #D3D3D3',
+      cursor: 'pointer'
     };
 
     /* components */
