@@ -23,14 +23,14 @@ Wishlist: [`https://djangosite.colinrieger.com/wishlist`](https://djangosite.col
   ```
   python -m pip install --upgrade pip
   ```
-- Install Django/psycopg3/django-webpack-loader
-  ```
-  pip install django psycopg2-binary django-webpack-loader
-  ```
 - Clone Repository
   ```
   git clone https://github.com/colinrieger/djangosite.git
   cd djangosite
+  ```
+- Install Python Packages
+  ```
+  pip install -r requirements.txt
   ```
 - Migrate Database
   ```
